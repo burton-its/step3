@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Procedure Types</title>
+</head>
+<body>
+    <h1>Procedure Types</h1>
+
+    <table border="1">
+    <tr>
+        <th>Procedure Type ID</th>
+        <th>Name</th>
+        <th>Description</th>
+
+    </tr>
+
+    {% for procedure_type in procedure_types %}
+    <tr>
+        <td>{{ procedure_type.procedure_type_id }}</td>
+        <td>{{ procedure_type.name }}</td>
+        <td>{{ procedure_type.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

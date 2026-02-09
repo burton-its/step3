@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Procedure Inventories</title>
+</head>
+<body>
+    <h1>Procedure Inventories</h1>
+
+    <table border="1">
+    <tr>
+        <th>Procedure ID</th>
+        <th>Product ID</th>
+        <th>Quantity</th>
+
+    </tr>
+
+    {% for procedure_inventory in procedure_inventories %}
+    <tr>
+        <td>{{ procedure_inventory.procedure_id }}</td>
+        <td>{{ procedure_inventory.product_id }}</td>
+        <td>{{ procedure_inventory.quantity_used }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

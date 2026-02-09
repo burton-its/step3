@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Procedures</title>
+</head>
+<body>
+    <h1>Procedures</h1>
+
+    <table border="1">
+    <tr>
+        <th>Procedure ID</th>
+        <th>Patient ID</th>
+        <th>Date</th>
+        <th>Type</th>
+
+    </tr>
+
+    {% for procedure in procedures %}
+    <tr>
+        <td>{{ procedure.procedure_id }}</td>
+        <td>{{ procedure.patient_id }}</td>
+        <td>{{ procedure.procedure_date }}</td>
+        <td>{{ procedure.procedure_type_id }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

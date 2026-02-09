@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Inventory</title>
+</head>
+<body>
+    <h1>Inventory</h1>
+
+    <table border="1">
+    <tr>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Cost</th>
+
+    </tr>
+
+    {% for inventory in inventories %}
+    <tr>
+        <td>{{ inventory.product_id }}</td>
+        <td>{{ inventory.product_name }}</td>
+        <td>{{ inventory.unit_cost }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Procedure Employee Table</title>
+</head>
+<body>
+    <h1>Procedure Employees</h1>
+
+    <table border="1">
+    <tr>
+        <th>Procedure ID</th>
+        <th>Employee ID</th>
+    </tr>
+
+    {% for procedure_employee in procedure_employees %}
+    <tr>
+        <td>{{ procedure_employee.procedure_id }}</td>
+        <td>{{ procedure_employee.employee_id }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>
