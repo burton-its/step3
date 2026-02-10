@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Patient</title>
+</head>
+<body>
+
+
+<h2>Edit Patient</h2>
+<form method="POST">
+  <label>First name</label>
+  <input name="first_name" value="{{ patient.first_name }}" required>
+
+  <label>Last name</label>
+  <input name="last_name" value="{{ patient.last_name }}" required>
+
+  <label>Email</label>
+  <input name="email" type="email" value="{{ patient.email }}" required>
+
+  <label>Phone</label>
+  <input name="phone" value="{{ patient.phone }}" required>
+
+  <button type="submit">Save</button>
+</form>
+<a href="/browse_patients">Cancel</a>
+</body>
+</html>

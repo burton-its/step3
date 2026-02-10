@@ -3,15 +3,11 @@ from flask_mysqldb import MySQL
 from flask import request
 import os
 
+
+
+
 app = Flask(__name__)
-
-app.config['MYSQL_HOST'] = 'classmysql.engr.oregonstate.edu'
-app.config['MYSQL_USER'] = 'cs340_[username]'
-app.config['MYSQL_PASSWORD'] = '[password]'
-app.config['MYSQL_DB'] = 'cs340_[username]'
-app.config['MYSQL_CURSORCLASS'] = "DictCursor"
-
-
+app.config.from_pyfile("config.py")
 mysql = MySQL(app)
 
 # Routes
@@ -107,9 +103,71 @@ def browse_procedure_employees():
     cur.close()
     return render_template('browse_procedure_employees.html', procedure_employees=procedure_employees)
 
+# add patient
+@app.route('/patients/add', methods=['GET', 'POST'])
+def add_patient():
+    if request.method == 'POST':
+        first = request.form['first_name']
+        last  = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """
+            INSERT INTO patient (first_name, last_name, email, phone)
+            VALUES (%s, %s, %s, %s)
+            """,
+            (first, last, email, phone)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_patients')
+
+    return render_template('add_patient.html')
+
+# edit patient
+@app.route('/patients/edit/<int:patient_id>', methods=['GET', 'POST'])
+def edit_patient(patient_id):
+    cur = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        first = request.form['first_name']
+        last  = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        cur.execute(
+            """
+            UPDATE patient
+            SET first_name=%s, last_name=%s, email=%s, phone=%s
+            WHERE patient_id=%s
+            """,
+            (first, last, email, phone, patient_id)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_patients')
+
+    # GET: get *
+    cur.execute("SELECT * FROM patient WHERE patient_id=%s", (patient_id,))
+    patient = cur.fetchone()
+    cur.close()
+    return render_template('edit_patient.html', patient=patient)
+
+
+# delete
+@app.route('/patients/delete/<int:patient_id>', methods=['POST'])
+def delete_patient(patient_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM patient WHERE patient_id=%s", (patient_id,))
+    mysql.connection.commit()
+    cur.close()
+    return redirect('/browse_patients')
+
 
 # Listener
 if __name__ == "__main__":
 
-    #Start the app to run on a port of your choosing
-    app.run(port=3110, debug=True)
+    #Start the app to run on a port of your choosing(change back to henry's)
+    app.run(port=20251, debug=True)
