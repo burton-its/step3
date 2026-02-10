@@ -52,7 +52,8 @@ CREATE TABLE `procedure` (
     procedure_date DATE NOT NULL,
     procedure_type_id INT NOT NULL,
     PRIMARY KEY (procedure_id),
-    FOREIGN KEY (patient_id) REFERENCES patient(patient_id),
+    FOREIGN KEY (patient_id) REFERENCES patient(patient_id)
+    ON DELETE CASCADE,
     FOREIGN KEY (procedure_type_id) REFERENCES procedure_type(procedure_type_id)
 );
 
@@ -61,7 +62,8 @@ CREATE TABLE procedure_employee (
     procedure_id INT NOT NULL,
     employee_id INT NOT NULL,
     PRIMARY KEY (procedure_id, employee_id),
-    FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id),
+    FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id)
+    ON DELETE CASCADE,
     FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
 );
 
@@ -71,6 +73,7 @@ CREATE TABLE procedure_inventory (
     product_id INT NOT NULL,
     quantity_used INT NOT NULL,
     PRIMARY KEY (procedure_id, product_id),
-    FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id),
+    FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id)
+    ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES inventory(product_id)
 );
