@@ -1,5 +1,5 @@
 -- template created with AI(chatgpt), information populated by Corey Burton/Henry Koster
-
+-- create
 -- patients
 INSERT INTO patient (first_name, last_name, email, phone) VALUES
 ('Corey', 'Burton', 'burton.corey@gmail.com', '555-1010'),
@@ -43,3 +43,26 @@ INSERT INTO procedure_inventory (procedure_id, product_id, quantity_used) VALUES
 (2, 3, 1),
 (3, 2, 1);
 
+-- get all patients
+SELECT * 
+FROM patient;
+
+-- read procedure types with patient
+SELECT p.procedure_id, pat.first_name, pat.last_name, pt.name AS procedure_type,
+        p.procedure_date
+FROM `procedure` p
+JOIN patient pat ON p.patient_id = pat.patient_id
+JOIN procedure_type pt ON p.procedure_type_id = pt.procedure_type_id
+ORDER BY p.procedure_id;
+
+
+-- update
+
+UPDATE patient
+SET phone = 555-2020
+WHERE email = 'burton.corey@gmail.com';
+
+
+-- delete
+DELETE FROM procedure_inventory
+WHERE procedure_id = 2 AND product_id = 3;

@@ -4,10 +4,8 @@ from flask import request
 import os
 
 
-
-
 app = Flask(__name__)
-app.config.from_pyfile("config.py")
+app.config.from_pyfile(os.path.join(os.path.dirname(__file__), "config.py"))
 mysql = MySQL(app)
 
 # Routes
