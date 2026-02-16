@@ -1,27 +1,3 @@
--- get all patients
-SELECT * 
-FROM patient;
-
--- read procedure types with patient
-SELECT p.procedure_id, pat.first_name, pat.last_name, pt.name AS procedure_type,
-        p.procedure_date
-FROM `procedure` p
-JOIN patient pat ON p.patient_id = pat.patient_id
-JOIN procedure_type pt ON p.procedure_type_id = pt.procedure_type_id
-ORDER BY p.procedure_id;
-
-
--- update
-
-UPDATE patient
-SET phone = 555-2020
-WHERE email = 'burton.corey@gmail.com';
-
-
--- delete
-DELETE FROM procedure_inventory
-WHERE procedure_id = 2 AND product_id = 3;
-
 -- SELECT: get all patients
     SELECT * FROM patient;
 
