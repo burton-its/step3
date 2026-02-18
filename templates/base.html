@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Dental Practice Management Database{% endblock %}</title>
+</head>
+<body>
+
+    <h2>Dental Practice Management Database</h2>
+    <hr>
+
+    <table border="1" cellpadding="5">
+        <tr>
+            <td><a href="{{ url_for('home') }}">Home</a></td>
+            <td><a href="{{ url_for('browse_patients') }}">Patients</a></td>
+            <td><a href="{{ url_for('browse_employees') }}">Employees</a></td>
+            <td><a href="{{ url_for('browse_inventory') }}">Inventory</a></td>
+            <td><a href="{{ url_for('browse_procedures') }}">Procedures</a></td>
+            <td><a href="{{ url_for('browse_procedure_types') }}">Procedure Types</a></td>
+            <td><a href="{{ url_for('browse_procedure_inventory') }}">Procedure Inventory</a></td>
+            <td><a href="{{ url_for('browse_procedure_employees') }}">Procedure Employees</a></td>
+        </tr>
+    </table>
+
+    <hr>
+
+    {% block content %}{% endblock %}
+
+</body>
+</html>

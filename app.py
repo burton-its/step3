@@ -2,7 +2,7 @@ from flask import Flask, render_template, json, redirect
 from flask_mysqldb import MySQL
 from flask import request
 import os
-
+import MySQLdb.cursors
 
 app = Flask(__name__)
 app.config.from_pyfile(os.path.join(os.path.dirname(__file__), "config.py"))
@@ -77,17 +77,41 @@ def browse_procedure_types():
     cur.close()
     return render_template('browse_procedure_types.html', procedure_types=procedure_types)
 
+
 @app.route('/browse_procedure_inventory')
 def browse_procedure_inventory():
-    cur = mysql.connection.cursor()
-
-    query6 = 'SELECT * FROM procedure_inventory;'
-
-    cur.execute(query6)
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cur.execute("SELECT procedure_id, product_id, quantity_used FROM procedure_inventory;")
     procedure_inventories = cur.fetchall()
-
     cur.close()
-    return render_template('browse_procedure_inventory.html', procedure_inventories=procedure_inventories)
+    return render_template("browse_procedure_inventory.html",
+                           procedure_inventories=procedure_inventories)
+
+@app.route('/procedure_inventory/edit/<int:procedure_id>/<int:product_id>', methods=['GET', 'POST'])
+def edit_procedure_inventory(procedure_id, product_id):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST':
+        quantity_used = request.form["quantity_used"]
+        cur.execute("""
+            UPDATE procedure_inventory
+            SET quantity_used = %s
+            WHERE procedure_id = %s AND product_id = %s
+        """, (quantity_used, procedure_id, product_id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('browse_procedure_inventory'))
+
+    # GET: load current values
+    cur.execute("""
+        SELECT procedure_id, product_id, quantity_used
+        FROM procedure_inventory
+        WHERE procedure_id = %s AND product_id = %s
+    """, (procedure_id, product_id))
+    row = cur.fetchone()
+    cur.close()
+
+    return render_template("edit_procedure_inventory.html", row=row)
 
 @app.route('/browse_procedure_employees')
 def browse_procedure_employees():
@@ -162,6 +186,7 @@ def delete_patient(patient_id):
     mysql.connection.commit()
     cur.close()
     return redirect('/browse_patients')
+
 
 
 # Listener

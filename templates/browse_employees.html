@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Browse Employees</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Browse Employees{% endblock %}
+
+{% block content %}
+
     <h1>Employees</h1>
 
     <table border="1">
@@ -25,5 +25,4 @@
 </table>
 
     <a href="/">Back to Home</a>
-</body>
-</html>
+{% endblock %}

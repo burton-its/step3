@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Procedure Inventory{% endblock %}
+
+{% block content %}
+<h1>Edit Procedure Inventory</h1>
+
+<p>Procedure ID: {{ row["procedure_id"] }}</p>
+<p>Product ID: {{ row["product_id"] }}</p>
+
+<form method="POST">
+    <label>Quantity Used:</label>
+    <input type="number" name="quantity_used" value="{{ row['quantity_used'] }}" min="0" required>
+    <button type="submit">Save</button>
+</form>
+
+{% endblock %}
