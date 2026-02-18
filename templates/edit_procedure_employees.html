@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Procedure Employee{% endblock %}
+
+{% block content %}
+<h1>Edit Procedure Employee</h1>
+
+<form method="POST">
+
+    <label>Procedure:</label>
+    <select name="procedure_id" required>
+        {% for procedure in procedures %}
+            <option value="{{ procedure['procedure_id'] }}"
+                {% if procedure['procedure_id'] == row['procedure_id'] %}selected{% endif %}>
+                {{ procedure['procedure_type_name'] }} (ID: {{ procedure['procedure_id'] }})
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <label>Employee:</label>
+    <select name="employee_id" required>
+        {% for emp in employees %}
+            <option value="{{ emp['employee_id'] }}"
+                {% if emp['employee_id'] == row['employee_id'] %}selected{% endif %}>
+                {{ emp['employee_name'] }} (ID: {{ emp['employee_id'] }})
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <button type="submit">Save</button>
+</form>
+
+<a href="{{ url_for('browse_procedure_employees') }}">Back to Browse</a>
+{% endblock %}

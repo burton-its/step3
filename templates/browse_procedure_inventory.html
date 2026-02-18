@@ -8,16 +8,18 @@
 <table border="1">
 <tr>
     <th>Procedure ID</th>
-    <th>Product ID</th>
+    <th>Procedure Type</th>
+    <th>Product Name</th>
     <th>Quantity</th>
     <th>Actions</th>
 </tr>
 
 {% for pi in procedure_inventories %}
 <tr>
-    <td>{{ pi["procedure_id"] }}</td>
-    <td>{{ pi["product_id"] }}</td>
-    <td>{{ pi["quantity_used"] }}</td>
+    <td>{{ pi['procedure_id']}}</td>
+    <td>{{ pi['procedure_type_name'] }}</td>
+    <td>{{ pi['inventory_name']}}</td>
+    <td>{{ pi['quantity_used']}}</td>
     <td>
         <a href="{{ url_for('edit_procedure_inventory',
                             procedure_id=pi['procedure_id'],

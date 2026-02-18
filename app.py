@@ -1,4 +1,4 @@
-from flask import Flask, render_template, json, redirect
+from flask import Flask, render_template, json, redirect, request, url_for
 from flask_mysqldb import MySQL
 from flask import request
 import os
@@ -28,102 +28,6 @@ def browse_patients():
 
     cur.close()
     return render_template('browse_patients.html', patients=patients)
-
-@app.route('/browse_employees')
-def browse_employees():
-    cur = mysql.connection.cursor()
-
-    query2 = 'SELECT * FROM employee;'
-
-    cur.execute(query2)
-    employees = cur.fetchall()
-
-    cur.close()
-    return render_template('browse_employees.html', employees=employees)
-
-@app.route('/browse_inventory')
-def browse_inventory():
-    cur = mysql.connection.cursor()
-
-    query3 = 'SELECT * FROM inventory;'
-
-    cur.execute(query3)
-    inventories = cur.fetchall()
-
-    cur.close()
-    return render_template('browse_inventory.html', inventories=inventories)
-
-@app.route('/browse_procedures')
-def browse_procedures():
-    cur = mysql.connection.cursor()
-
-    query4 = 'SELECT * FROM `procedure`;'
-
-    cur.execute(query4)
-    procedures = cur.fetchall()
-
-    cur.close()
-    return render_template('browse_procedures.html', procedures=procedures)
-
-@app.route('/browse_procedure_types')
-def browse_procedure_types():
-    cur = mysql.connection.cursor()
-
-    query5 = 'SELECT * FROM procedure_type;'
-
-    cur.execute(query5)
-    procedure_types = cur.fetchall()
-
-    cur.close()
-    return render_template('browse_procedure_types.html', procedure_types=procedure_types)
-
-
-@app.route('/browse_procedure_inventory')
-def browse_procedure_inventory():
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute("SELECT procedure_id, product_id, quantity_used FROM procedure_inventory;")
-    procedure_inventories = cur.fetchall()
-    cur.close()
-    return render_template("browse_procedure_inventory.html",
-                           procedure_inventories=procedure_inventories)
-
-@app.route('/procedure_inventory/edit/<int:procedure_id>/<int:product_id>', methods=['GET', 'POST'])
-def edit_procedure_inventory(procedure_id, product_id):
-    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    if request.method == 'POST':
-        quantity_used = request.form["quantity_used"]
-        cur.execute("""
-            UPDATE procedure_inventory
-            SET quantity_used = %s
-            WHERE procedure_id = %s AND product_id = %s
-        """, (quantity_used, procedure_id, product_id))
-        mysql.connection.commit()
-        cur.close()
-        return redirect(url_for('browse_procedure_inventory'))
-
-    # GET: load current values
-    cur.execute("""
-        SELECT procedure_id, product_id, quantity_used
-        FROM procedure_inventory
-        WHERE procedure_id = %s AND product_id = %s
-    """, (procedure_id, product_id))
-    row = cur.fetchone()
-    cur.close()
-
-    return render_template("edit_procedure_inventory.html", row=row)
-
-@app.route('/browse_procedure_employees')
-def browse_procedure_employees():
-    cur = mysql.connection.cursor()
-
-    query7 = 'SELECT * FROM procedure_employee;'
-
-    cur.execute(query7)
-    procedure_employees = cur.fetchall()
-
-    cur.close()
-    return render_template('browse_procedure_employees.html', procedure_employees=procedure_employees)
 
 # add patient
 @app.route('/patients/add', methods=['GET', 'POST'])
@@ -187,7 +91,206 @@ def delete_patient(patient_id):
     cur.close()
     return redirect('/browse_patients')
 
+@app.route('/browse_employees')
+def browse_employees():
+    cur = mysql.connection.cursor()
 
+    query2 = 'SELECT * FROM employee;'
+
+    cur.execute(query2)
+    employees = cur.fetchall()
+
+    cur.close()
+    return render_template('browse_employees.html', employees=employees)
+
+@app.route('/browse_inventory')
+def browse_inventory():
+    cur = mysql.connection.cursor()
+
+    query3 = 'SELECT * FROM inventory;'
+
+    cur.execute(query3)
+    inventories = cur.fetchall()
+
+    cur.close()
+    return render_template('browse_inventory.html', inventories=inventories)
+
+@app.route('/browse_procedures')
+def browse_procedures():
+    cur = mysql.connection.cursor()
+
+    query4 = '''
+    SELECT 
+        `procedure`.procedure_id,
+        CONCAT(patient.first_name, ' ', patient.last_name) AS patient_name,
+        procedure_type.name AS procedure_type_name,
+        `procedure`.procedure_date
+    FROM `procedure`
+    JOIN patient ON `procedure`.patient_id = patient.patient_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id;
+    '''
+
+    cur.execute(query4)
+    procedures = cur.fetchall()
+
+    cur.close()
+    return render_template('browse_procedures.html', procedures=procedures)
+
+@app.route('/browse_procedure_types')
+def browse_procedure_types():
+    cur = mysql.connection.cursor()
+
+    query5 = 'SELECT * FROM procedure_type;'
+
+    cur.execute(query5)
+    procedure_types = cur.fetchall()
+
+    cur.close()
+    return render_template('browse_procedure_types.html', procedure_types=procedure_types)
+
+
+@app.route('/browse_procedure_inventory')
+def browse_procedure_inventory():
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query6 = '''
+    SELECT
+        procedure_inventory.procedure_id,
+        procedure_inventory.product_id,
+        procedure_type.name AS procedure_type_name,
+        inventory.product_name AS inventory_name,
+        procedure_inventory.quantity_used
+    FROM procedure_inventory
+    JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    JOIN inventory ON procedure_inventory.product_id = inventory.product_id;
+    '''
+
+    cur.execute(query6)
+    procedure_inventories = cur.fetchall()
+    cur.close()
+    return render_template("browse_procedure_inventory.html",
+                           procedure_inventories=procedure_inventories)
+
+@app.route('/procedure_inventory/edit/<int:procedure_id>/<int:product_id>', methods=['GET', 'POST'])
+def edit_procedure_inventory(procedure_id, product_id):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST':
+        quantity_used = request.form["quantity_used"]
+        cur.execute("""
+            UPDATE procedure_inventory
+            SET quantity_used = %s
+            WHERE procedure_id = %s AND product_id = %s
+        """, (quantity_used, procedure_id, product_id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('browse_procedure_inventory'))
+
+    # GET: load current values
+    cur.execute("""
+        SELECT procedure_inventory.procedure_id,
+               procedure_inventory.product_id,
+               procedure_inventory.quantity_used,
+               procedure_type.name AS procedure_type_name,
+               inventory.product_name AS inventory_name
+        FROM procedure_inventory
+        JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+        JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+        JOIN inventory ON procedure_inventory.product_id = inventory.product_id
+        WHERE procedure_inventory.procedure_id = %s
+          AND procedure_inventory.product_id = %s
+    """, (procedure_id, product_id))
+    row = cur.fetchone()
+    cur.close()
+    return render_template("edit_procedure_inventory.html", row=row)
+
+@app.route('/browse_procedure_employees')
+def browse_procedure_employees():
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    query7 = '''
+    SELECT
+        procedure_employee.procedure_id,
+        procedure_employee.employee_id,
+        procedure_type.name AS procedure_type_name,
+        CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+    FROM procedure_employee
+    JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON procedure.procedure_type_id = procedure_type.procedure_type_id
+    JOIN employee ON procedure_employee.employee_id = employee.employee_id;
+    '''
+
+    cur.execute(query7)
+    procedure_employees = cur.fetchall()
+
+    cur.close()
+    return render_template('browse_procedure_employees.html', procedure_employees=procedure_employees)
+
+@app.route('/procedure_employee/edit/<int:procedure_id>/<int:employee_id>', methods=['GET', 'POST'])
+def edit_procedure_employee(procedure_id, employee_id):
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+    if request.method == 'POST':
+        new_procedure_id = request.form["procedure_id"]
+        new_employee_id = request.form["employee_id"]
+
+        # Check if this combination already exists (except for current row)
+        cur.execute("""
+            SELECT COUNT(*) AS cnt
+            FROM procedure_employee
+            WHERE procedure_id = %s AND employee_id = %s
+        """, (new_procedure_id, new_employee_id))
+        existing = cur.fetchone()
+        if existing['cnt'] > 0 and (int(new_procedure_id) != procedure_id or int(new_employee_id) != employee_id):
+            cur.close()
+            return "Error: That employee is already assigned to this procedure!"
+
+        # Safe to update
+        cur.execute("""
+            UPDATE procedure_employee
+            SET procedure_id = %s, employee_id = %s
+            WHERE procedure_id = %s AND employee_id = %s
+        """, (new_procedure_id, new_employee_id, procedure_id, employee_id))
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('browse_procedure_employees'))
+
+    # GET: load current row info
+    cur.execute("""
+        SELECT procedure_employee.procedure_id,
+               procedure_employee.employee_id,
+               procedure_type.name AS procedure_type_name,
+               CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+        FROM procedure_employee
+        JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+        JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+        JOIN employee ON procedure_employee.employee_id = employee.employee_id
+        WHERE procedure_employee.procedure_id = %s
+          AND procedure_employee.employee_id = %s
+    """, (procedure_id, employee_id))
+    row = cur.fetchone()
+
+    # Get all procedures for dropdown
+    cur.execute("""
+        SELECT `procedure`.procedure_id, procedure_type.name AS procedure_type_name
+        FROM `procedure`
+        JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    """)
+    procedures = cur.fetchall()
+
+    # Get all employees for dropdown
+    cur.execute("""
+        SELECT employee_id, CONCAT(first_name, ' ', last_name) AS employee_name
+        FROM employee
+    """)
+    employees = cur.fetchall()
+
+    cur.close()
+    return render_template("edit_procedure_employees.html",
+                           row=row,
+                           procedures=procedures,
+                           employees=employees)
 
 # Listener
 if __name__ == "__main__":

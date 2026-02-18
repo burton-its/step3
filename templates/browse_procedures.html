@@ -9,18 +9,18 @@
     <table border="1">
     <tr>
         <th>Procedure ID</th>
-        <th>Patient ID</th>
+        <th>Patient Name</th>
+        <th>Procedure Type</th>
         <th>Date</th>
-        <th>Type</th>
 
     </tr>
 
     {% for procedure in procedures %}
     <tr>
         <td>{{ procedure.procedure_id }}</td>
-        <td>{{ procedure.patient_id }}</td>
-        <td>{{ procedure.procedure_date }}</td>
-        <td>{{ procedure.procedure_type_id }}</td>
+        <td>{{ procedure.patient_name }}</td>
+        <td>{{ procedure.procedure_type_name }}</td>
+        <td>{{ procedure.procedure_date}}</td>
     </tr>
     {% endfor %}
 </table>

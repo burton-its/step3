@@ -6,7 +6,8 @@
 <h1>Edit Procedure Inventory</h1>
 
 <p>Procedure ID: {{ row["procedure_id"] }}</p>
-<p>Product ID: {{ row["product_id"] }}</p>
+<p>Procedure Type: {{ row["procedure_type_name"] }}</p>
+<p>Product Name: {{ row["inventory_name"] }}</p>
 
 <form method="POST">
     <label>Quantity Used:</label>

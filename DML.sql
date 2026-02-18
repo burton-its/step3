@@ -92,6 +92,27 @@
 -- SELECT: get a single procedure by procedure_id
     SELECT * FROM `procedure` WHERE procedure_id = @procedure_id_Input;
 
+-- SELECT: get all procedures with patient name and procedure type name
+    SELECT 
+        `procedure`.procedure_id,
+        CONCAT(patient.first_name, ' ', patient.last_name) AS patient_name,
+        procedure_type.name AS procedure_type_name,
+        `procedure`.procedure_date
+    FROM `procedure`
+    JOIN patient ON `procedure`.patientid = patient.patient_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id;
+
+-- SELECT: get a single procedure with patient name and procedure type name
+    SELECT 
+        `procedure`.procedure_id,
+        CONCAT(patient.first_name, ' ', patient.last_name) AS patient_name,
+        procedure_type.name AS procedure_type_name,
+        `procedure`.procedure_date
+    FROM `procedure`
+    JOIN patient ON `procedure`.patientid = patient.patient_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    WHERE procedure_id = @procedure_id_Input;
+
 -- INSERT: add new procedure
     INSERT INTO `procedure` (
         patient_id,
@@ -153,6 +174,55 @@
 -- SELECT: get a single procedure_inventory record
     SELECT * FROM procedure_inventory WHERE procedure_id = @procedure_id_Input AND product_id = @product_id_Input;
 
+-- SELECT: get all procedure_inventory with procedure type and inventory names
+    SELECT
+        procedure_inventory.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        inventory.product_name AS inventory_name,
+        procedure_inventory.quantity_used
+    FROM procedure_inventory
+    JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    JOIN inventory ON procedure_inventory.product_id = inventory.product_id;
+
+-- SELECT: get all procedures from procedure_inventory for a specific procedure
+    SELECT
+        procedure_inventory.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        inventory.product_name AS inventory_name,
+        procedure_inventory.quantity_used
+    FROM procedure_inventory
+    JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    JOIN inventory ON procedure_inventory.product_id = inventory.product_id
+    WHERE procedure_inventory.procedure_id = @procedure_id_Input;
+
+-- SELECT: get all procedures from procedure_inventory for a specific product
+    SELECT
+        procedure_inventory.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        inventory.product_name AS inventory_name,
+        procedure_inventory.quantity_used
+    FROM procedure_inventory
+    JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    JOIN inventory ON procedure_inventory.product_id = inventory.product_id
+    WHERE procedure_inventory.prodduct_id = @product_id_Input;
+
+-- SELECT: get a single procedure from procedure_inventory by procedure_id and product_id
+    SELECT
+        procedure_inventory.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        inventory.product_name AS inventory_name,
+        procedure_inventory.quantity_used
+    FROM procedure_inventory
+    JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+    JOIN inventory ON procedure_inventory.product_id = inventory.product_id
+    WHERE procedure_inventory.procedure_id = @procedure_id_Input
+    AND procedure_inventory.product_id = @product_id_Input;
+
+
 -- INSERT: add a new entry to procedure_inventory
     INSERT INTO procedure_inventory (
         procedure_id,
@@ -184,7 +254,51 @@
     SELECT * FROM procedure_employee WHERE employee_id = @employee_id_Input;
 
 -- SELECT: get a specific procedure_employee record
-    SELECT * FROM procedure_employee WHERE procedure_id = @procedure_id_Input AND employee_id = @employee_id_Input; 
+    SELECT * FROM procedure_employee WHERE procedure_id = @procedure_id_Input AND employee_id = @employee_id_Input;
+
+-- SELECT: get all procedure_employee with procedure type and employee names
+    SELECT
+        procedure_employee.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+    FROM procedure_employee
+    JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON procedure.procedure_type_id = procedure_type.procedure_type_id
+    JOIN employee ON procedure_employee.employee_id = employee.employee_id;
+
+-- SELECT: get all procedure_employee with for a specific procedure
+    SELECT
+        procedure_employee.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+    FROM procedure_employee
+    JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON procedure.procedure_type_id = procedure_type.procedure_type_id
+    JOIN employee ON procedure_employee.employee_id = employee.employee_id
+    WHERE procedure_employee.procedure_id = @procedure_id_Input;
+
+-- SELECT: get all procedure_employee with for a specific employee
+    SELECT
+        procedure_employee.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+    FROM procedure_employee
+    JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON procedure.procedure_type_id = procedure_type.procedure_type_id
+    JOIN employee ON procedure_employee.employee_id = employee.employee_id
+    WHERE procedure_employee.employee_id = @employee_id_Input;
+
+-- SELECT: get all procedure_employee with by procedure_id and employee_id
+    SELECT
+        procedure_employee.procedure_id,
+        procedure_type.name AS procedure_type_name,
+        CONCAT(employee.first_name, ' ', employee.last_name) AS employee_name
+    FROM procedure_employee
+    JOIN `procedure` ON procedure_employee.procedure_id = `procedure`.procedure_id
+    JOIN procedure_type ON procedure.procedure_type_id = procedure_type.procedure_type_id
+    JOIN employee ON procedure_employee.employee_id = employee.employee_id
+    WHERE procedure_employee.procedure_id = @procedure_id_Input
+    AND procedure_employee.employee_id = @employee_id_Input;
 
 -- INSERT: add a new entry to precedure_employee
     INSERT INTO procedure_employee (
