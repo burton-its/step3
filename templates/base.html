@@ -23,6 +23,45 @@
 
     <hr>
 
+    {% if allow_db_reset %}
+    <div style="margin:10px 0; padding:8px; border:1px solid red;">
+        <strong>Dev Tools</strong>
+        <button id="resetBtn" type="button">Reset Database</button>
+        <span id="resetStatus" style="margin-left:10px;"></span>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.getElementById("resetBtn");
+        if (!btn) return;
+
+        btn.addEventListener("click", async function () {
+            const typed = prompt("Type RESET to confirm database reset:");
+            if (typed !== "RESET") return;
+
+            const status = document.getElementById("resetStatus");
+            status.textContent = "Resetting...";
+
+            try {
+                const res = await fetch("/admin/reset-db", {
+                    method: "POST",
+                    headers: { "X-Admin-Token": "dev-reset-token" }
+                });
+
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+                status.textContent = "✅ Reset complete";
+                location.reload();
+            } catch (err) {
+                status.textContent = "❌ " + err.message;
+            }
+        });
+    });
+    </script>
+    <hr>
+    {% endif %}
+
     {% block content %}{% endblock %}
 
 </body>

@@ -1,6 +1,5 @@
-from flask import Flask, render_template, json, redirect, request, url_for
+from flask import Flask, render_template, json, redirect, request, url_for, abort
 from flask_mysqldb import MySQL
-from flask import request
 import os
 import MySQLdb.cursors
 
@@ -8,10 +7,37 @@ app = Flask(__name__)
 app.config.from_pyfile(os.path.join(os.path.dirname(__file__), "config.py"))
 mysql = MySQL(app)
 
+@app.context_processor
+def inject_dev_flags():
+    return {
+        "allow_db_reset": os.getenv("ALLOW_DB_RESET", "false").lower() == "true"
+    }
+
 # Routes
 @app.route('/')
 def root():
     return render_template('index.html')
+
+
+@app.post("/admin/reset-db")
+def reset_db():
+    if os.getenv("ALLOW_DB_RESET", "false").lower() != "true":
+        abort(403)
+
+    if request.headers.get("X-Admin-Token", "") != os.getenv("ADMIN_TOKEN", ""):
+        abort(401)
+
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("CALL sp_reset_db();")
+        mysql.connection.commit()
+        return {"ok": True}, 200
+    except Exception as e:
+        mysql.connection.rollback()
+        return {"ok": False, "error": str(e)}, 500
+    finally:
+        cur.close()
+
 
 @app.route('/home')
 def home():
