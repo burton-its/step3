@@ -30,6 +30,7 @@ def reset_db():
     cur = mysql.connection.cursor()
     try:
         cur.execute("CALL sp_reset_db();")
+        cur.nextset()
         mysql.connection.commit()
         return {"ok": True}, 200
     except Exception as e:
@@ -67,11 +68,11 @@ def add_patient():
         cur = mysql.connection.cursor()
         cur.execute(
             """
-            INSERT INTO patient (first_name, last_name, email, phone)
-            VALUES (%s, %s, %s, %s)
+            CALL sp_add_patient(%s, %s, %s, %s)
             """,
             (first, last, email, phone)
         )
+        cur.nextset()
         mysql.connection.commit()
         cur.close()
         return redirect('/browse_patients')
@@ -91,12 +92,11 @@ def edit_patient(patient_id):
 
         cur.execute(
             """
-            UPDATE patient
-            SET first_name=%s, last_name=%s, email=%s, phone=%s
-            WHERE patient_id=%s
+            CALL sp_update_patient(%s, %s, %s, %s, %s)
             """,
-            (first, last, email, phone, patient_id)
+            (patient_id, first, last, email, phone)
         )
+        cur.nextset()
         mysql.connection.commit()
         cur.close()
         return redirect('/browse_patients')
@@ -112,7 +112,8 @@ def edit_patient(patient_id):
 @app.route('/patients/delete/<int:patient_id>', methods=['POST'])
 def delete_patient(patient_id):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM patient WHERE patient_id=%s", (patient_id,))
+    cur.execute("CALL sp_delete_patient(%s)", (patient_id,))
+    cur.nextset()
     mysql.connection.commit()
     cur.close()
     return redirect('/browse_patients')
@@ -204,11 +205,11 @@ def edit_procedure_inventory(procedure_id, product_id):
 
     if request.method == 'POST':
         quantity_used = request.form["quantity_used"]
-        cur.execute("""
-            UPDATE procedure_inventory
-            SET quantity_used = %s
-            WHERE procedure_id = %s AND product_id = %s
-        """, (quantity_used, procedure_id, product_id))
+        cur.execute(
+            "CALL sp_update_procedure_inventory(%s, %s, %s)", 
+            (procedure_id, product_id, quantity_used)
+        )
+        cur.nextset()
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('browse_procedure_inventory'))
@@ -261,7 +262,7 @@ def edit_procedure_employee(procedure_id, employee_id):
         new_procedure_id = request.form["procedure_id"]
         new_employee_id = request.form["employee_id"]
 
-        # Check if this combination already exists (except for current row)
+        # Check if this combination already exists 
         cur.execute("""
             SELECT COUNT(*) AS cnt
             FROM procedure_employee
@@ -273,11 +274,11 @@ def edit_procedure_employee(procedure_id, employee_id):
             return "Error: That employee is already assigned to this procedure!"
 
         # Safe to update
-        cur.execute("""
-            UPDATE procedure_employee
-            SET procedure_id = %s, employee_id = %s
-            WHERE procedure_id = %s AND employee_id = %s
-        """, (new_procedure_id, new_employee_id, procedure_id, employee_id))
+        cur.execute(
+            "CALL sp_update_procedure_employee(%s, %s, %s, %s)",
+            (procedure_id, employee_id, new_procedure_id, new_employee_id)
+        )
+        cur.nextset()
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('browse_procedure_employees'))
