@@ -79,7 +79,7 @@
     UPDATE inventory
     SET 
         product_name = @product_name_Update,
-        unit_cost = @unit_cost_Update,
+        unit_cost = @unit_cost_Update
     WHERE product_id = @product_id_Update;
 
 -- DELETE: Delete a product by product_id
@@ -99,7 +99,7 @@
         procedure_type.name AS procedure_type_name,
         `procedure`.procedure_date
     FROM `procedure`
-    JOIN patient ON `procedure`.patientid = patient.patient_id
+    JOIN patient ON `procedure`.patient_id = patient.patient_id
     JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id;
 
 -- SELECT: get a single procedure with patient name and procedure type name
@@ -109,7 +109,7 @@
         procedure_type.name AS procedure_type_name,
         `procedure`.procedure_date
     FROM `procedure`
-    JOIN patient ON `procedure`.patientid = patient.patient_id
+    JOIN patient ON `procedure`.patient_id = patient.patient_id
     JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
     WHERE procedure_id = @procedure_id_Input;
 
@@ -207,7 +207,7 @@
     JOIN `procedure` ON procedure_inventory.procedure_id = `procedure`.procedure_id
     JOIN procedure_type ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
     JOIN inventory ON procedure_inventory.product_id = inventory.product_id
-    WHERE procedure_inventory.prodduct_id = @product_id_Input;
+    WHERE procedure_inventory.product_id = @product_id_Input;
 
 -- SELECT: get a single procedure from procedure_inventory by procedure_id and product_id
     SELECT
@@ -237,7 +237,7 @@
 -- UPDATE: Update an existing entry to procedure_inventory
     UPDATE procedure_inventory
     SET 
-        quantity_used = @quantity_used_Update,
+        quantity_used = @quantity_used_Update
     WHERE procedure_id = @procedure_id_Update AND product_id = @product_id_Update;
 
 -- DELETE: Delete a procedure_inventory by procedure and product ids
@@ -311,4 +311,4 @@
 
 -- DELETE: Delete a procedure_employee entry by procedure and product ids
     DELETE FROM procedure_employee
-    WHERE procedure_id = @procedure_id_Delete AND employee_id = @product_id_Delete;
+    WHERE procedure_id = @procedure_id_Delete AND employee_id = @employee_id_Delete;
