@@ -108,7 +108,7 @@ def edit_patient(patient_id):
     return render_template('edit_patient.html', patient=patient)
 
 
-# delete
+# delete patient
 @app.route('/patients/delete/<int:patient_id>', methods=['POST'])
 def delete_patient(patient_id):
     cur = mysql.connection.cursor()
@@ -118,6 +118,7 @@ def delete_patient(patient_id):
     cur.close()
     return redirect('/browse_patients')
 
+# browse employee
 @app.route('/browse_employees')
 def browse_employees():
     cur = mysql.connection.cursor()
@@ -130,6 +131,66 @@ def browse_employees():
     cur.close()
     return render_template('browse_employees.html', employees=employees)
 
+# add employee
+@app.route('/employees/add', methods=['GET', 'POST'])
+def add_employee():
+    if request.method == 'POST':
+        first = request.form['first_name']
+        last  = request.form['last_name']
+        role = request.form['role']
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """
+            CALL sp_add_employee(%s, %s, %s)
+            """,
+            (first, last, role)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_employees')
+
+    return render_template('add_employee.html')
+
+# edit employee
+@app.route('/employees/edit/<int:employee_id>', methods=['GET', 'POST'])
+def edit_employee(employee_id):
+    cur = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        first = request.form['first_name']
+        last  = request.form['last_name']
+        role = request.form['role']
+
+        cur.execute(
+            """
+            CALL sp_update_employee(%s, %s, %s, %s)
+            """,
+            (employee_id, first, last, role)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_employees')
+
+    # GET: get *
+    cur.execute("SELECT * FROM employee WHERE employee_id=%s", (employee_id,))
+    employee = cur.fetchone()
+    cur.close()
+    return render_template('edit_employee.html', employee=employee)
+
+# delete employee
+@app.route('/employees/delete/<int:employee_id>', methods=['POST'])
+def delete_employee(employee_id):
+    cur = mysql.connection.cursor()
+    cur.execute("CALL sp_delete_employee(%s)", (employee_id,))
+    cur.nextset()
+    mysql.connection.commit()
+    cur.close()
+    return redirect('/browse_employees')
+
+#browse inventory
 @app.route('/browse_inventory')
 def browse_inventory():
     cur = mysql.connection.cursor()
@@ -142,6 +203,64 @@ def browse_inventory():
     cur.close()
     return render_template('browse_inventory.html', inventories=inventories)
 
+# add inventory
+@app.route('/inventory/add', methods=['GET', 'POST'])
+def add_inventory():
+    if request.method == 'POST':
+        name = request.form['product_name']
+        unit_cost  = request.form['unit_cost']
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """
+            CALL sp_add_inventory(%s, %s)
+            """,
+            (name, unit_cost)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_inventory')
+
+    return render_template('add_inventory.html')
+
+# edit inventory
+@app.route('/inventory/edit/<int:product_id>', methods=['GET', 'POST'])
+def edit_inventory(product_id):
+    cur = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        name = request.form['product_name']
+        unit_cost  = request.form['unit_cost']
+
+        cur.execute(
+            """
+            CALL sp_update_inventory(%s, %s, %s)
+            """,
+            (product_id, name, unit_cost)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_inventory')
+
+    # GET: get *
+    cur.execute("SELECT * FROM inventory WHERE product_id=%s", (product_id,))
+    inventory = cur.fetchone()
+    cur.close()
+    return render_template('edit_inventory.html', inventory=inventory)
+
+# delete inventory
+@app.route('/inventory/delete/<int:product_id>', methods=['POST'])
+def delete_inventory(product_id):
+    cur = mysql.connection.cursor()
+    cur.execute("CALL sp_delete_inventory(%s)", (product_id,))
+    cur.nextset()
+    mysql.connection.commit()
+    cur.close()
+    return redirect('/browse_inventory')
+
+# browse procedures
 @app.route('/browse_procedures')
 def browse_procedures():
     cur = mysql.connection.cursor()
@@ -163,6 +282,66 @@ def browse_procedures():
     cur.close()
     return render_template('browse_procedures.html', procedures=procedures)
 
+# add procedure
+@app.route('/procedures/add', methods=['GET', 'POST'])
+def add_procedure():
+    if request.method == 'POST':
+        patient_id = request.form['patient_id']
+        date  = request.form['procedure_date']
+        procedure_type_id = request.form['procedure_type_id']
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            """
+            CALL sp_add_procedure(%s, %s, %s)
+            """,
+            (patient_id, date, procedure_type_id)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_procedures')
+
+    return render_template('add_procedure.html')
+
+# edit procedure
+@app.route('/procedures/edit/<int:procedure_id>', methods=['GET', 'POST'])
+def edit_procedure(procedure_id):
+    cur = mysql.connection.cursor()
+
+    if request.method == 'POST':
+        patient_id = request.form['patient_id']
+        date  = request.form['procedure_date']
+        procedure_type_id = request.form['procedure_type_id']
+
+        cur.execute(
+            """
+            CALL sp_update_procedure(%s, %s, %s, %s)
+            """,
+            (procedure_id, patient_id, date, procedure_type_id)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_procedures')
+
+    # GET: get *
+    cur.execute("SELECT * FROM `procedure` WHERE procedure_id=%s", (procedure_id,))
+    procedure = cur.fetchone()
+    cur.close()
+    return render_template('edit_procedure.html', procedure=procedure)
+
+# delete procedure
+@app.route('/procedures/delete/<int:procedure_id>', methods=['POST'])
+def delete_procedure(procedure_id):
+    cur = mysql.connection.cursor()
+    cur.execute("CALL sp_delete_procedure(%s)", (procedure_id,))
+    cur.nextset()
+    mysql.connection.commit()
+    cur.close()
+    return redirect('/browse_procedures')
+
+# browse procedure types
 @app.route('/browse_procedure_types')
 def browse_procedure_types():
     cur = mysql.connection.cursor()
@@ -175,7 +354,7 @@ def browse_procedure_types():
     cur.close()
     return render_template('browse_procedure_types.html', procedure_types=procedure_types)
 
-
+# browse procedure inventory
 @app.route('/browse_procedure_inventory')
 def browse_procedure_inventory():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -199,6 +378,7 @@ def browse_procedure_inventory():
     return render_template("browse_procedure_inventory.html",
                            procedure_inventories=procedure_inventories)
 
+# edit procedure inventory
 @app.route('/procedure_inventory/edit/<int:procedure_id>/<int:product_id>', methods=['GET', 'POST'])
 def edit_procedure_inventory(procedure_id, product_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -232,6 +412,7 @@ def edit_procedure_inventory(procedure_id, product_id):
     cur.close()
     return render_template("edit_procedure_inventory.html", row=row)
 
+# browse procedure employees
 @app.route('/browse_procedure_employees')
 def browse_procedure_employees():
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -254,6 +435,7 @@ def browse_procedure_employees():
     cur.close()
     return render_template('browse_procedure_employees.html', procedure_employees=procedure_employees)
 
+# edit procedure employees
 @app.route('/procedure_employee/edit/<int:procedure_id>/<int:employee_id>', methods=['GET', 'POST'])
 def edit_procedure_employee(procedure_id, employee_id):
     cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)

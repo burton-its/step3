@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Employee</title>
+</head>
+<body>
+
+
+<h2>Edit Employee</h2>
+<form method="POST">
+  <label>First name</label>
+  <input name="first_name" value="{{ employee.first_name }}" required>
+
+  <label>Last name</label>
+  <input name="last_name" value="{{ employee.last_name }}" required>
+
+  <label>Role</label>
+  <input name="role" value="{{ employee.role }}" required>
+
+  <button type="submit">Save</button>
+</form>
+<a href="/browse_employees">Cancel</a>
+</body>
+</html>

@@ -63,6 +63,7 @@ BEGIN
       FOREIGN KEY (patient_id) REFERENCES patient(patient_id)
         ON DELETE CASCADE,
       FOREIGN KEY (procedure_type_id) REFERENCES procedure_type(procedure_type_id)
+        ON DELETE CASCADE
   );
 
   -- junction: procedure <-> employee
@@ -73,6 +74,7 @@ BEGIN
       FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id)
         ON DELETE CASCADE,
       FOREIGN KEY (employee_id) REFERENCES employee(employee_id)
+        ON DELETE CASCADE
   );
 
   -- junction: procedure <-> inventory
@@ -84,6 +86,7 @@ BEGIN
       FOREIGN KEY (procedure_id) REFERENCES `procedure`(procedure_id)
         ON DELETE CASCADE,
       FOREIGN KEY (product_id) REFERENCES inventory(product_id)
+        ON DELETE CASCADE
   );
 
   -- seed data

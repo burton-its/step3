@@ -6,6 +6,9 @@
 
     <h1>Procedures</h1>
 
+    <a href="/procedures/add">Add Procedure</a>
+    <br><br>
+
     <table border="1">
     <tr>
         <th>Procedure ID</th>
@@ -21,6 +24,13 @@
         <td>{{ procedure.patient_name }}</td>
         <td>{{ procedure.procedure_type_name }}</td>
         <td>{{ procedure.procedure_date}}</td>
+        <td>
+        <a href="/procedures/edit/{{ procedure.procedure_id }}">Edit</a>
+
+        <form action="/procedures/delete/{{ procedure.procedure_id }}" method="POST" style="display:inline;">
+          <button type="submit" onclick="return confirm('Delete this procedure?')">Delete</button>
+        </form>
+    </td>
     </tr>
     {% endfor %}
 </table>

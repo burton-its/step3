@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Product</title>
+</head>
+<body>
+
+
+<h2>Edit Product</h2>
+<form method="POST">
+  <label>Name</label>
+  <input name="product_name" value="{{ inventory.product_name }}" required>
+
+  <label>Unit Cost</label>
+  <input name="unit_cost" value="{{ inventory.unit_cost }}" required>
+
+  <button type="submit">Save</button>
+</form>
+<a href="/browse_inventory">Cancel</a>
+</body>
+</html>

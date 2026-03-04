@@ -6,6 +6,9 @@
 
     <h1>Employees</h1>
 
+    <a href="/employees/add">Add Employee</a>
+    <br><br>
+
     <table border="1">
     <tr>
         <th>Employee ID</th>
@@ -20,6 +23,13 @@
         <td>{{ employee.first_name }}</td>
         <td>{{ employee.last_name }}</td>
         <td>{{ employee.role }}</td>
+        <td>
+        <a href="/employees/edit/{{ employee.employee_id }}">Edit</a>
+
+        <form action="/employees/delete/{{ employee.employee_id }}" method="POST" style="display:inline;">
+          <button type="submit" onclick="return confirm('Delete this Employee?')">Delete</button>
+        </form>
+    </td>
     </tr>
     {% endfor %}
 </table>

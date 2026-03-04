@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Procedure</title>
+</head>
+<body>
+
+
+<h2>Edit Procedure</h2>
+<form method="POST">
+  <label>Patient ID</label>
+  <input name="patient_id" value="{{ procedure.patient_id }}" required>
+
+  <label>Procedure Date</label>
+  <input name="procedure_date" type="date" value="{{ procedure.procedure_date }}" required>
+
+  <label>Procedure Type ID</label>
+  <input name="procedure_type_id" value="{{ procedure.procedure_type_id }}" required>
+
+  <button type="submit">Save</button>
+</form>
+<a href="/browse_procedures">Cancel</a>
+</body>
+</html>
