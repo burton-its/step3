@@ -244,6 +244,34 @@
     DELETE FROM procedure_inventory
     WHERE procedure_id = @procedure_id_Delete AND product_id = @product_id_Delete;
 
+-- set variables for procedure_employee examples
+SET @procedure_id_Input = (
+    SELECT procedure_id
+    FROM `procedure`
+    LIMIT 1
+);
+
+SET @employee_id_Input = (
+    SELECT employee_id
+    FROM employee
+    LIMIT 1
+);
+
+
+SET @procedure_id_Delete = @procedure_id_Input;
+SET @employee_id_Delete = @employee_id_Input;
+
+INSERT INTO procedure_employee (procedure_id, employee_id)
+SELECT @procedure_id_Input, @employee_id_Input
+WHERE @procedure_id_Input IS NOT NULL
+  AND @employee_id_Input IS NOT NULL
+  AND NOT EXISTS (
+      SELECT 1
+      FROM procedure_employee
+      WHERE procedure_id = @procedure_id_Input
+        AND employee_id = @employee_id_Input
+  );
+
 -- SELECT: get all procedure employees
     SELECT * FROM procedure_employee;
 
@@ -300,14 +328,24 @@
     WHERE procedure_employee.procedure_id = @procedure_id_Input
     AND procedure_employee.employee_id = @employee_id_Input;
 
--- INSERT: add a new entry to precedure_employee
-    INSERT INTO procedure_employee (
-        procedure_id,
-        employee_id
-    ) VALUES (
-        @procedure_id_Input,
-        @employee_id_Input
-    );
+
+-- -- INSERT: add a new entry to procedure_employee
+--     INSERT INTO procedure_employee (
+--         procedure_id,
+--         employee_id
+--     ) VALUES (
+--         @procedure_id_Input,
+--         @employee_id_Input
+--     );
+-- INSERT: add a new entry to procedure_employee only if it does not already exist
+INSERT INTO procedure_employee (procedure_id, employee_id)
+SELECT @procedure_id_Input, @employee_id_Input
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM procedure_employee
+    WHERE procedure_id = @procedure_id_Input
+      AND employee_id = @employee_id_Input
+);
 
 -- DELETE: Delete a procedure_employee entry by procedure and product ids
     DELETE FROM procedure_employee

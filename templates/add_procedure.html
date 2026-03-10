@@ -7,16 +7,31 @@
     <h1>Add Procedure</h1>
 
     <form method="POST">
+
         <label>Patient ID</label><br>
-        <input name="patient_id" required><br><br>
+        <select name="patient_id" required>
+            <option value="">Select Patient</option>
+            <option value="1">1 - Corey</option>
+            <option value="2">2 - Henry</option>
+            <option value="3">3 - Cloud</option>
+        </select>
+        <br><br>
 
         <label>Procedure Date</label><br>
-        <input name="procedure_date" type="date" required><br><br>
+        <input name="procedure_date" type="date" required>
+        <br><br>
 
         <label>Procedure Type ID</label><br>
-        <input name="procedure_type_id" required><br><br>
+        <select name="procedure_type_id" required>
+            <option value="">Select Procedure Type</option>
+            <option value="1">1 - Filling</option>
+            <option value="2">2 - Cleaning</option>
+            <option value="3">3  - Crown</option>
+        </select>
+        <br><br>
 
         <button type="submit">Add</button>
+
     </form>
 
     <br>

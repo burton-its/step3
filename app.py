@@ -254,10 +254,17 @@ def edit_inventory(product_id):
 @app.route('/inventory/delete/<int:product_id>', methods=['POST'])
 def delete_inventory(product_id):
     cur = mysql.connection.cursor()
-    cur.execute("CALL sp_delete_inventory(%s)", (product_id,))
-    cur.nextset()
-    mysql.connection.commit()
-    cur.close()
+    try:
+        cur.execute("CALL sp_delete_inventory(%s)", (product_id,))
+        cur.nextset()
+        mysql.connection.commit()
+    except Exception as e:
+        mysql.connection.rollback()
+        print("Delete inventory error:", e)
+        return "Cannot delete product because it is referenced by another record."
+    finally:
+        cur.close()
+
     return redirect('/browse_inventory')
 
 # browse procedures
