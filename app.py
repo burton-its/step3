@@ -442,6 +442,59 @@ def browse_procedure_employees():
     cur.close()
     return render_template('browse_procedure_employees.html', procedure_employees=procedure_employees)
 
+# add procedure employee
+@app.route('/procedure_employee/add', methods=['GET', 'POST'])
+def add_procedure_employee():
+    cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    if request.method == 'POST':
+        procedure_id = request.form["procedure_id"]
+        employee_id = request.form["employee_id"]
+
+        cur.execute(
+            """
+            SELECT COUNT(*) AS cnt
+            FROM procedure_employee
+            WHERE procedure_id = %s AND employee_id = %s
+            """, (procedure_id, employee_id))
+        
+        existing = cur.fetchone()
+
+        if existing['cnt'] > 0:
+            cur.close()
+            return "Error: That employee is already assigned to this procedure."
+
+        cur.execute(
+            """
+            CALL sp_add_procedure_employee(%s, %s)
+            """,
+            (procedure_id, employee_id)
+        )
+        cur.nextset()
+        mysql.connection.commit()
+        cur.close()
+        return redirect('/browse_procedure_employees')
+    
+    cur.execute(
+        """
+        SELECT `procedure`.procedure_id, procedure_type.name AS procedure_type_name
+        FROM `procedure`
+        JOIN procedure_type
+        ON `procedure`.procedure_type_id = procedure_type.procedure_type_id
+        """)
+    procedures = cur.fetchall()
+
+    cur.execute(
+        """
+        SELECT employee_id, CONCAT(first_name, ' ', last_name) AS employee_name
+        FROM employee
+        """)
+    
+    employees = cur.fetchall()
+
+    cur.close()
+
+    return render_template('add_procedure_employee.html', procedures=procedures, employees=employees)
+
 # edit procedure employees
 @app.route('/procedure_employee/edit/<int:procedure_id>/<int:employee_id>', methods=['GET', 'POST'])
 def edit_procedure_employee(procedure_id, employee_id):
@@ -507,6 +560,16 @@ def edit_procedure_employee(procedure_id, employee_id):
                            row=row,
                            procedures=procedures,
                            employees=employees)
+
+# delete procedure employee
+@app.route('/procedure_employee/delete/<int:procedure_id>/<int:employee_id>', methods=['POST'])
+def delete_procedure_employee(procedure_id, employee_id):
+    cur = mysql.connection.cursor()
+    cur.execute("CALL sp_delete_procedure_employee(%s, %s)", (procedure_id, employee_id))
+    cur.nextset()
+    mysql.connection.commit()
+    cur.close()
+    return redirect('/browse_procedure_employees')
 
 # Listener
 if __name__ == "__main__":

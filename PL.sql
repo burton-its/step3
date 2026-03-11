@@ -158,6 +158,16 @@ BEGIN
 END//
 
 -- PROCEDURE EMPLOYEE PROCEDURES
+DROP PROCEDURE IF EXISTS sp_add_procedure_employee//
+CREATE PROCEDURE sp_add_procedure_employee(
+    IN pe_procedure_id INT,
+    IN pe_employee_id INT
+)
+BEGIN
+    INSERT INTO procedure_employee (procedure_id, employee_id)
+    VALUES (pe_procedure_id, pe_employee_id);
+END//
+
 DROP PROCEDURE IF EXISTS sp_update_procedure_employee//
 CREATE PROCEDURE sp_update_procedure_employee(
     IN pe_cur_procedure_id INT,
@@ -170,6 +180,16 @@ BEGIN
     SET procedure_id = pe_new_procedure_id,
         employee_id = pe_new_employee_id
     WHERE procedure_id = pe_cur_procedure_id AND employee_id = pe_cur_employee_id;
+END//
+
+DROP PROCEDURE IF EXISTS sp_delete_procedure_employee//
+CREATE PROCEDURE sp_delete_procedure_employee(
+    IN pe_procedure_id INT,
+    IN pe_employee_id INT
+)
+BEGIN
+    DELETE FROM procedure_employee
+    WHERE procedure_id = pe_procedure_id AND employee_id = pe_employee_id;
 END//
 
 DELIMITER ;

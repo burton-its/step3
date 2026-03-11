@@ -5,6 +5,9 @@
 {% block content %}
     <h1>Procedure Employees</h1>
 
+    <a href="{{ url_for('add_procedure_employee') }}">Add Procedure Employee</a>
+    <br><br>
+
     <table border="1">
     <tr>
         <th>Procedure ID</th>
@@ -24,6 +27,12 @@
                             employee_id=procedure_employee['employee_id']) }}">
             Edit
         </a>
+        <form action="{{ url_for('delete_procedure_employee',
+                                     procedure_id=procedure_employee['procedure_id'],
+                                     employee_id=procedure_employee['employee_id']) }}" 
+                method="POST" style="display:inline;">
+          <button type="submit" onclick="return confirm('Delete this Procedure Employee?')">Delete</button>
+        </form>
     </td>
     </tr>
     {% endfor %}

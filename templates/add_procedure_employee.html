@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Procedure Employee</title>
+</head>
+<body>
+    <h1>Add Procedure Employee</h1>
+
+    <form method="POST">
+        <label>Procedure ID</label><br>
+        <select name="procedure_id" required>
+        {% for procedure in procedures %}
+            <option value="{{ procedure['procedure_id'] }}">
+                {{ procedure['procedure_type_name'] }} (ID: {{ procedure['procedure_id'] }})
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+        <label>Employee ID</label><br>
+        <select name="employee_id" required>
+        {% for emp in employees %}
+            <option value="{{ emp['employee_id'] }}">
+                {{ emp['employee_name'] }} (ID: {{ emp['employee_id'] }})
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+        <button type="submit">Add</button>
+    </form>
+
+    <br>
+    <a href="/browse_procedure_employees">Cancel</a>
+</body>
+</html>
