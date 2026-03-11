@@ -329,14 +329,7 @@ WHERE @procedure_id_Input IS NOT NULL
     AND procedure_employee.employee_id = @employee_id_Input;
 
 
--- -- INSERT: add a new entry to procedure_employee
---     INSERT INTO procedure_employee (
---         procedure_id,
---         employee_id
---     ) VALUES (
---         @procedure_id_Input,
---         @employee_id_Input
---     );
+
 -- INSERT: add a new entry to procedure_employee only if it does not already exist
 INSERT INTO procedure_employee (procedure_id, employee_id)
 SELECT @procedure_id_Input, @employee_id_Input
